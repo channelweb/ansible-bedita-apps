@@ -1,0 +1,50 @@
+---
+- name: setup `.env` config files
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  template:
+    src: "{{ app_templates_path }}/config/{{ item.key }}/.env.j2"
+    dest: "{{ app_base_path }}/{{ item.key }}/config/.env"
+  ignore_errors: true
+  when: 
+    - item.value.env is defined
+    - (app_templates_path + '/config/' + item.key + '/.env.j2') is is_file
+  with_dict: "{{ apps }}"
+  tags:
+    - bedita-config
+
+- name: setup `app.php` config files
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  template:
+    src: "{{ app_templates_path }}/config/{{ item.key }}/app.php"
+    dest: "{{ app_base_path }}/{{ item.key }}/config/app.php"
+  ignore_errors: true
+  when: (app_templates_path + '/config/' + item.key + '/app.php') is is_file
+  with_dict: "{{ apps }}"
+  tags:
+    - bedita-config
+
+- name: setup `paths.php` config files
+  become: yes
+  become_user: root
+  template:
+    src: "{{ app_templates_path }}/config/{{ item.key }}/paths.php"
+    dest: "{{ app_base_path }}/{{ item.key }}/config/paths.php"
+  ignore_errors: true
+  when: (app_templates_path + '/config/' + item.key + '/paths.php') is is_file
+  with_dict: "{{ apps }}"
+  tags:
+    - bedita-config
+
+- name: setup `robots.txt` if template is set
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  template:
+    src: "{{ app_templates_path }}/webroot/{{ item.key }}/robots.txt"
+    dest: "{{ app_base_path }}/{{ item.key }}/webroot/robots.txt"
+  ignore_errors: true
+  when: (app_templates_path + '/webroot/' + item.key + '/robots.txt') is is_file
+  with_dict: "{{ apps }}"
+  tags:
+    - bedita-config

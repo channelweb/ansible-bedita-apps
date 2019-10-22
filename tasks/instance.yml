@@ -1,0 +1,7 @@
+---
+# loop over plugins list
+- include_tasks: plugins.yml
+  with_dict: "{{ app.value.plugins }}"
+  when: app.value.plugins is defined
+  loop_control:
+    loop_var: plugin

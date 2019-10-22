@@ -1,0 +1,9 @@
+---
+- include_tasks: setup.yml
+
+- include_tasks: clone.yml
+
+- include_tasks: config.yml
+
+- include_tasks: package.yml
+  when: create_package is defined

@@ -1,0 +1,41 @@
+---
+- name: clone apps
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  git:
+    repo: "{{ item.value.src | mandatory }}"
+    depth: 1
+    version: "{{ item.value.version | mandatory}}"
+    dest: "{{ app_base_path }}/{{ item.key }}"
+    accept_hostkey: yes
+    update: yes
+    force: yes
+  with_dict: "{{ apps }}"
+  tags: 
+    - bedita-apps
+
+- include_tasks: instance.yml
+  with_dict: "{{ apps }}"
+  loop_control:
+    loop_var: app
+
+- name: install apps dependencies (composer)
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  composer:
+    command: install
+    prefer_dist: yes
+    working_dir: "{{ app_base_path }}/{{ item.key }}"
+  with_dict: "{{ apps }}"
+  tags: bedita-dependencies
+
+
+- name: update apps dependencies (composer)
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  composer:
+    command: update
+    prefer_dist: yes
+    working_dir: "{{ app_base_path }}/{{ item.key }}"
+  with_dict: "{{ apps }}"
+  tags: bedita-dependencies

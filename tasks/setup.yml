@@ -1,0 +1,39 @@
+---
+- name: set up composer github auth token
+  become: yes
+  become_user: "{{ app_deploy_user }}"
+  command: "composer global config github-oauth.github.com {{ app_composer_github_token }}"
+  when: app_composer_github_token | default("") != ""
+  tags: composer
+
+- name: ensure target directory exists and has correct permissions set
+  become: yes
+  file:
+    path: "{{ app_base_path }}/{{ item.key }}"
+    state: directory
+    owner: "{{ app_deploy_user }}"
+    mode: 0755
+  with_dict: "{{ apps }}"
+  tags: bedita
+
+- name: ensure app `logs` directory exists
+  become: yes
+  become_user: root
+  file:
+    path: "{{ app_logs_path }}/{{ item.key }}"
+    state: directory
+    owner: "{{ app_deploy_user }}"
+    mode: 0755
+  with_dict: "{{ apps }}"
+  tags: bedita
+
+- name: ensure app `tmp` directory exists
+  become: yes
+  become_user: root
+  file:
+    path: "{{ app_tmp_path }}/{{ item.key }}"
+    state: directory
+    owner: "{{ app_deploy_user }}"
+    mode: 0755
+  with_dict: "{{ apps }}"
+  tags: bedita
