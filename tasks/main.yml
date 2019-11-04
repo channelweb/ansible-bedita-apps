@@ -4,4 +4,3 @@
 - include_tasks: clone.yml
 
 - include_tasks: package.yml
-  when: create_package is defined
