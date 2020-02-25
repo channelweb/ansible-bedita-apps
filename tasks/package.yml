@@ -1,26 +1,19 @@
 ---
 - name: install css/js packages
-  become_user: "{{ app_deploy_user }}"
   command: yarn
   args:
     chdir: "{{ app_base_path }}/{{ item.key }}"
   when: item.value.bundle is defined
   with_dict: "{{ apps }}"
-  tags:
-    - bedita-package
 
 - name: create JS/CSS bundle
-  become_user: "{{ app_deploy_user }}"
   command: yarn build
   args:
     chdir: "{{ app_base_path }}/{{ item.key }}"
   when: item.value.bundle is defined
   with_dict: "{{ apps }}"
-  tags:
-    - bedita-package
 
 - name: create package archive
-  become_user: "{{ app_deploy_user }}"
   archive:
     path:
     - "{{ app_base_path }}/{{ item.key }}/*"
@@ -34,8 +27,6 @@
     owner: "{{ app_deploy_user }}"
     format: gz
   with_dict: "{{ apps }}"
-  tags:
-    - bedita-package
 
 - name: fetch package 
   fetch:
@@ -43,5 +34,3 @@
     dest: "tmp/packages/{{ item.key }}-{{ pack_suffix }}.tar.gz"
     flat: yes
   with_dict: "{{ apps }}"
-  tags:
-    - bedita-package

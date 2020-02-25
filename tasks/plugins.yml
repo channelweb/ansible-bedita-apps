@@ -1,7 +1,5 @@
 ---
 - name: clone plugins via git
-  become: yes
-  become_user: "{{ app_deploy_user }}"
   git:
     repo: "{{ plugin.value.src }}"
     version: "{{ plugin.value.version }}"
@@ -10,5 +8,3 @@
     update: yes
     force: yes
   with_dict: "{{ plugin }}"
-  tags: 
-    - bedita-apps
