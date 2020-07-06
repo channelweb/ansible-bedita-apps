@@ -29,7 +29,7 @@
   with_dict: "{{ apps }}"
 
 - set_fact:
-    commits: "{{ commits | default({}) | combine({item.item.key: {'commit': item.stdout, 'version': item.item.value.version}}) }}"
+    commits: "{{ commits | default({}) | combine({item.item.key: {'commit': item.stdout, 'version': item.item.value.version, 'date': ansible_date_time.iso8601}}) }}"
   loop: "{{ apps_commit.results }}"
 
 - set_fact:
@@ -54,4 +54,3 @@
     prefer_dist: yes
     working_dir: "{{ app_base_path }}/{{ item.key }}"
   with_dict: "{{ apps }}"
-
