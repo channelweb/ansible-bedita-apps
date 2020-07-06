@@ -1,4 +1,9 @@
 ---
+- name: create version json file
+  copy:
+    content: "{{ item.value | to_nice_json }}"
+    dest: "{{ app_base_path }}/{{ item.key }}/webroot/__version.json"
+  with_dict: "{{ versions }}"
 
 - name: pre-bundle creation commands
   shell: "{{ item.value.pre_bundle }}"

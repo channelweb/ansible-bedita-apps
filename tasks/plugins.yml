@@ -7,4 +7,12 @@
     accept_hostkey: yes
     update: yes
     force: yes
-  with_dict: "{{ plugin }}"
+
+- name: get git hash
+  shell: git rev-parse --short HEAD
+  args:
+    chdir: "{{ app_base_path }}/{{ plugin.value.path }}/plugins/{{ plugin.key }}"
+  register: p_commit
+
+- set_fact:
+    versions: "{{ versions | combine({plugin.value.path: {'plugins': {plugin.key: {'commit': p_commit.stdout, 'version': plugin.value.version}}}}, recursive=true) }}"
