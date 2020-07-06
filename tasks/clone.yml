@@ -18,6 +18,24 @@
     force: yes
   with_dict: "{{ apps }}"
 
+- set_fact:
+    versions: {}
+
+- name: get git hash
+  shell: git rev-parse --short HEAD
+  args:
+    chdir: "{{ app_base_path }}/{{ item.key }}"
+  register: apps_commit
+  with_dict: "{{ apps }}"
+
+- set_fact:
+    commits: "{{ commits | default({}) | combine({item.item.key: {'commit': item.stdout, 'version': item.item.value.version}}) }}"
+  loop: "{{ apps_commit.results }}"
+
+- set_fact:
+    versions: "{{ versions | combine({item.key: item.value}, recursive=true) }}"
+  with_dict: "{{ commits }}"
+
 - include_tasks: instance.yml
   with_dict: "{{ apps }}"
   loop_control:
