@@ -22,7 +22,6 @@
 
 - set_fact:
     versions: {}
-    commits: {}
 
 - name: get git hash
   shell: git rev-parse --short HEAD
