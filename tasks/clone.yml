@@ -5,6 +5,7 @@
   file: 
     path: "{{ app_base_path }}/{{ item.key }}" 
     state: absent
+  when: item.value.mount is not defined
   with_dict: "{{ apps }}"
 
 - name: clone apps
@@ -16,10 +17,12 @@
     accept_hostkey: yes
     update: yes
     force: yes
+  when: item.value.mount is not defined
   with_dict: "{{ apps }}"
 
 - set_fact:
     versions: {}
+    commits: {}
 
 - name: get git hash
   shell: git rev-parse --short HEAD
@@ -28,11 +31,14 @@
   register: apps_commit
   with_dict: "{{ apps }}"
 
-- set_fact:
+- name: setup commits 
+  set_fact:
     commits: "{{ commits | default({}) | combine({item.item.key: {'commit': item.stdout, 'version': item.item.value.version, 'date': ansible_date_time.iso8601}}) }}"
   loop: "{{ apps_commit.results }}"
 
-- set_fact:
+
+- name: setup commits in versions 
+  set_fact:
     versions: "{{ versions | combine({item.key: item.value}, recursive=true) }}"
   with_dict: "{{ commits }}"
 
