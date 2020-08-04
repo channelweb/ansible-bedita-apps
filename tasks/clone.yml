@@ -53,6 +53,13 @@
   when: (app_templates_path + '/composer/' + item.key + '/composer.lock') is is_file
   with_dict: "{{ apps }}"
 
+- name: install hirak/prestissimo (composer)
+  composer:
+    command: require
+    arguments: hirak/prestissimo
+    prefer_dist: yes
+    global_command: yes
+
 - name: install apps dependencies (composer)
   composer:
     command: install
