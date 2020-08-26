@@ -9,7 +9,7 @@
   shell: "{{ item.value.pre_bundle }}"
   args:
     chdir: "{{ app_base_path }}/{{ item.key }}"
-  when: item.value.bundle is defined and item.value.pre_bundle is defined 
+  when: item.value.bundle is defined and item.value.pre_bundle is defined
   with_dict: "{{ apps }}"
 
 - name: install JS/CSS packages (yarn)
@@ -30,7 +30,7 @@
   archive:
     path:
     - "{{ app_base_path }}/{{ item.key }}/*"
-    dest: "{{ app_base_path }}/{{ item.key }}-{{ pack_suffix }}.tar.gz"
+    dest: "{{ app_package_path }}/{{ item.key }}-{{ pack_suffix }}.tar.gz"
     exclude_path:
     - "{{ app_base_path }}/{{ item.key }}/.git"
     - "{{ app_base_path }}/{{ item.key }}/logs"
@@ -41,9 +41,9 @@
     format: gz
   with_dict: "{{ apps }}"
 
-- name: fetch package 
+- name: fetch package
   fetch:
-    src: "{{ app_base_path }}/{{ item.key }}-{{ pack_suffix }}.tar.gz"
+    src: "{{ app_package_path }}/{{ item.key }}-{{ pack_suffix }}.tar.gz"
     dest: "tmp/packages/{{ item.key }}-{{ pack_suffix }}.tar.gz"
     flat: yes
   with_dict: "{{ apps }}"

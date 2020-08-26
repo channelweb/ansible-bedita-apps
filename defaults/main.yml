@@ -15,6 +15,9 @@ app_rollback_tmp_path: /tmp/myapps/rollback
 # deploy packages bucket
 app_deploy_bucket: my-bucket
 
+# package creation path
+app_package_path: /tmp
+
 # apps
 apps: {}
 
