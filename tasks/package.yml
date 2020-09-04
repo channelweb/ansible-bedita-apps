@@ -35,6 +35,7 @@
     - "{{ app_base_path }}/{{ item.key }}/.git"
     - "{{ app_base_path }}/{{ item.key }}/logs"
     - "{{ app_base_path }}/{{ item.key }}/node_modules"
+    - "{{ app_base_path }}/{{ item.key }}/resources/assets"
     - "{{ app_base_path }}/{{ item.key }}/tests"
     - "{{ app_base_path }}/{{ item.key }}/tmp"
     owner: "{{ app_deploy_user }}"
