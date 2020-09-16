@@ -1,4 +1,14 @@
 ---
+- name: ensure $COMPOSER_HOME dir exists
+  become: yes
+  become_user: root
+  file:
+    path: "{{ app_composer_path }}"
+    state: directory
+    owner: "{{ app_deploy_user }}"
+    mode: 0755
+  with_dict: "{{ apps }}"
+
 - name: set up composer github auth token
   command: "composer global config github-oauth.github.com {{ app_composer_github_token }}"
   when: app_composer_github_token | default("") != ""
