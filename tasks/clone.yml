@@ -2,8 +2,8 @@
 
 # Remove app folder first, for a "clean" clone
 - name: remove the app folder if present
-  file: 
-    path: "{{ app_base_path }}/{{ item.key }}" 
+  file:
+    path: "{{ app_base_path }}/{{ item.key }}"
     state: absent
   when: item.value.mount is not defined
   with_dict: "{{ apps }}"
@@ -30,13 +30,13 @@
   register: apps_commit
   with_dict: "{{ apps }}"
 
-- name: setup commits 
+- name: setup commits
   set_fact:
     commits: "{{ commits | default({}) | combine({item.item.key: {'commit': item.stdout, 'version': item.item.value.version, 'date': ansible_date_time.iso8601}}) }}"
   loop: "{{ apps_commit.results }}"
 
 
-- name: setup commits in versions 
+- name: setup commits in versions
   set_fact:
     versions: "{{ versions | combine({item.key: item.value}, recursive=true) }}"
   with_dict: "{{ commits }}"
@@ -53,9 +53,16 @@
   when: (app_templates_path + '/composer/' + item.key + '/composer.lock') is is_file
   with_dict: "{{ apps }}"
 
+- name: make sure composer cache dir exists
+  file:
+    path: "{{ composer_cache_dir }}"
+    state: directory
+
 - name: install apps dependencies (composer)
   composer:
     command: install
     prefer_dist: yes
     working_dir: "{{ app_base_path }}/{{ item.key }}"
   with_dict: "{{ apps }}"
+  environment:
+    COMPOSER_CACHE_DIR: "{{ composer_cache_dir }}"
