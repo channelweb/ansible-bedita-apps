@@ -12,12 +12,19 @@
   when: item.value.bundle is defined and item.value.pre_bundle is defined
   with_dict: "{{ apps }}"
 
+- name: make sure yarn cache dir exists
+  file:
+    path: "{{ yarn_cache_dir }}"
+    state: directory
+
 - name: install JS/CSS packages (yarn)
   command: yarn
   args:
     chdir: "{{ app_base_path }}/{{ item.key }}"
   when: item.value.bundle is defined
   with_dict: "{{ apps }}"
+  environment:
+    YARN_CACHE_FOLDER: "{{ yarn_cache_dir }}"
 
 - name: create JS/CSS bundle (yarn build)
   command: yarn build

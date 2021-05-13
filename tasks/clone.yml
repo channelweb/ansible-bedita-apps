@@ -33,11 +33,6 @@
   loop_control:
     loop_var: app
 
-- include_tasks: instance.yml
-  with_dict: "{{ apps }}"
-  loop_control:
-    loop_var: app
-
 - name: copy composer.lock (optional)
   template:
     src: "{{ app_templates_path }}/composer/{{ item.key }}/composer.lock"
@@ -45,9 +40,16 @@
   when: (app_templates_path + '/composer/' + item.key + '/composer.lock') is is_file
   with_dict: "{{ apps }}"
 
+- name: make sure composer cache dir exists
+  file:
+    path: "{{ composer_cache_dir }}"
+    state: directory
+
 - name: install apps dependencies (composer)
   composer:
     command: install
     prefer_dist: yes
     working_dir: "{{ app_base_path }}/{{ item.key }}"
   with_dict: "{{ apps }}"
+  environment:
+    COMPOSER_CACHE_DIR: "{{ composer_cache_dir }}"

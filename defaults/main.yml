@@ -19,6 +19,10 @@ app_deploy_bucket: my-bucket
 # package creation path
 app_package_path: /tmp
 
+# cache folders
+composer_cache_dir: /tmp/composer-cache
+yarn_cache_dir: /tmp/yarn-cache
+
 # apps
 apps: {}
 
