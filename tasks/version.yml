@@ -1,0 +1,16 @@
+---
+- name: read git commit hash
+  shell: git rev-parse --short HEAD
+  args:
+    chdir: "{{ app_base_path }}/{{ app.key }}"
+  register: p_commit
+
+- name: read git branch name
+  shell: git rev-parse --abbrev-ref HEAD
+  args:
+    chdir: "{{ app_base_path }}/{{ app.key }}"
+  register: p_branch
+
+- name: setup commit and branch info in versions
+  set_fact:
+    versions: "{{ versions | combine({app.key: {'commit': p_commit.stdout, 'branch': p_branch.stdout}}, recursive=true) }}"

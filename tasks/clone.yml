@@ -23,23 +23,10 @@
 - set_fact:
     versions: {}
 
-- name: get git hash
-  shell: git rev-parse --short HEAD
-  args:
-    chdir: "{{ app_base_path }}/{{ item.key }}"
-  register: apps_commit
+- include_tasks: version.yml
   with_dict: "{{ apps }}"
-
-- name: setup commits
-  set_fact:
-    commits: "{{ commits | default({}) | combine({item.item.key: {'commit': item.stdout, 'version': item.item.value.version, 'date': ansible_date_time.iso8601}}) }}"
-  loop: "{{ apps_commit.results }}"
-
-
-- name: setup commits in versions
-  set_fact:
-    versions: "{{ versions | combine({item.key: item.value}, recursive=true) }}"
-  with_dict: "{{ commits }}"
+  loop_control:
+    loop_var: app
 
 - include_tasks: instance.yml
   with_dict: "{{ apps }}"

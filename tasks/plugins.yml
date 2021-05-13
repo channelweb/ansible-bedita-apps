@@ -8,11 +8,17 @@
     update: yes
     force: yes
 
-- name: get git hash
+- name: read git commit hash
   shell: git rev-parse --short HEAD
   args:
     chdir: "{{ app_base_path }}/{{ plugin.value.path }}/plugins/{{ plugin.key }}"
   register: p_commit
 
+- name: read git branch name
+  shell: git rev-parse --abbrev-ref HEAD
+  args:
+    chdir: "{{ app_base_path }}/{{ plugin.value.path }}/plugins/{{ plugin.key }}"
+  register: p_branch
+
 - set_fact:
-    versions: "{{ versions | combine({plugin.value.path: {'plugins': {plugin.key: {'commit': p_commit.stdout, 'version': plugin.value.version}}}}, recursive=true) }}"
+    versions: "{{ versions | combine({plugin.value.path: {'plugins': {plugin.key: {'commit': p_commit.stdout, 'branch': p_branch.stdout}}}}, recursive=true) }}"
